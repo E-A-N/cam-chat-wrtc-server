@@ -14,12 +14,15 @@ wss.on('connection', ws => {
     console.log('A user connected');
 
     ws.on('message', message => {
-        // Broadcast the message to all connected clients except the sender
-        wss.clients.forEach(client => {
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
-                client.send(message);
-            }
-        });
+        // Ensure the message is a string before broadcasting
+        if (typeof message === 'string') {
+            // Broadcast the message to all connected clients except the sender
+            wss.clients.forEach(client => {
+                if (client !== ws && client.readyState === WebSocket.OPEN) {
+                    client.send(message);
+                }
+            });
+        }
     });
 
     ws.on('close', () => {
@@ -28,6 +31,7 @@ wss.on('connection', ws => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+const HOST = '0.0.0.0'; // Listen on all network interfaces
+server.listen(PORT, HOST, () => {
+    console.log(`Server is running on http://${HOST}:${PORT}`);
 });
